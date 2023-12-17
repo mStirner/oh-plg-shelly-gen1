@@ -1,0 +1,30 @@
+{
+  "name": "oh-plg-shelly-gen1",
+  "private": "true",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "backend": "<1.2 || 1.1.62",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "build": "grunt build",
+    "compress": "grunt compress",
+    "checksum": "grunt checksum",
+    "release": "grunt release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mStirner/oh-plg-shelly-gen1.git"
+  },
+  "author": "Marc Stirner <marc.stirner@open-haus.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mStirner/oh-plg-shelly-gen1/issues"
+  },
+  "homepage": "https://github.com/mStirner/oh-plg-shelly-gen1#readme",
+  "devDependencies": {
+    "grunt": "^1.6.1",
+    "grunt-contrib-uglify": "^5.2.2",
+    "grunt-env": "^1.0.1"
+  }
+}
