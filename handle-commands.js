@@ -11,14 +11,8 @@ module.exports = async (logger, [
     }, async (item) => {
         try {
 
-            // replace this after fixing 352 with item.labels.value("model");
-            let label = item?.labels.find((label) => {
-                return label.match(/model=*./i);
-            });
-
-            let model = label.split("=")[1];
-
-            console.log("Handle enpdoint", item.name, model)
+            // fix for #352
+            let model = item.labels.value("model");
 
             let { handle } = require(`./models/${model}.js`)(logger, [
                 C_ENDPOINTS
