@@ -131,23 +131,14 @@ module.exports = (logger, [
         handle(endpoint, iface) {
             try {
 
-                console.log("endpointHandler", endpoint._id)
-
                 let { host, port } = iface.settings;
                 let agent = iface.httpAgent();
-                //let relay = endpoint.labels.value("relay");
-                let mode = endpoint.labels.find((label) => {
-                    return label.match(/mode=*./i);
-                }).split("=")[1];
 
-                let index = endpoint.labels.find((label) => {
-                    return label.match(/index=*./i);
-                }).split("=")[1];
+                let mode = endpoint.labels.value("mode");
+                let index = endpoint.labels.value("index");
 
                 endpoint.commands.forEach((command) => {
                     command.setHandler((cmd, _, params, done) => {
-
-                        console.log("Called setHandler")
 
                         let turn = "close";
 
@@ -167,11 +158,7 @@ module.exports = (logger, [
                         request(`http://${host}:${port}/${mode}/${index}?go=${turn}`, {
                             agent
                         }, (err, result) => {
-
-                            console.log(err || result, String(result.body), `http://${host}:${port}/${mode}/${index}?go=${turn}`);
-
-                            done(result.body.state === turn)
-
+                            done(err, result.body.state === turn);
                         });
 
                     });
