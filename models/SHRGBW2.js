@@ -1,6 +1,7 @@
 // Shelly Flood
 // https://shelly-api-docs.shelly.cloud/gen1/#shelly-rgbw2-color
 // https://www.shelly.com/en/products/shop/shelly-rgbw2
+const { URLSearchParams } = require("url");
 
 const request = require("../../../helper/request.js");
 
@@ -87,35 +88,56 @@ module.exports = (logger, [
         handle(endpoint, iface) {
             try {
 
-                console.log("endpointHandler", endpoint._id)
-
                 let { host, port } = iface.settings;
                 let agent = iface.httpAgent();
-                //let relay = endpoint.labels.value("relay");
-                let index = endpoint.labels.find((label) => {
-                    return label.match(/index=*./i);
-                }).split("=")[1];
+
+                let index = endpoint.labels.value("index");
 
                 endpoint.commands.forEach((command) => {
                     command.setHandler((cmd, _, params, done) => {
 
-                        let turn = "off";
+                        let qs = new URLSearchParams();
+                        qs.set("turn", "off");
 
                         if (cmd.alias === "ON") {
-                            turn = "on";
+
+                            qs.set("turn", "on");
+
                         } else if (cmd.alias === "OFF") {
-                            turn = "off";
+
+                            qs.set("turn", "off");
+
+                        } else if (cmd.alias === "COLOR") {
+
+                            qs.set("turn", "on");
+                            qs.set("red", params[0].value || 0);
+                            qs.set("green", params[1].value || 0);
+                            qs.set("blue", params[2].value || 0);
+
+                        } else if (cmd.alias === "GAIN") {
+
+                            qs.set("turn", "on");
+                            qs.set("gain", params[0].value || 0);
+
                         } else {
-                            logger.error("alias invalid");
+
+                            logger.error("alias invalid", cmd.alias);
+
                         }
 
-                        request(`http://${host}:${port}/color/${index}?turn=${turn}`, {
+                        let url = `http://${host}:${port}/color/${index}?${qs.toString()}`;
+
+                        console.log("Shelly request:", url);
+
+
+                        // `http://${host}:${port}/color/${index}?turn=${turn}&red=${r}&green=${g}&blue=${b}`
+                        request(url, {
                             agent
                         }, (err, result) => {
 
-                            console.log(err || result, String(result.body), `http://${host}:${port}/color/${index}?turn=${turn}`);
-
-                            done(result.body.ison ? turn == "on" : turn == "off")
+                            // TODO check body result
+                            //let body = result.body;
+                            done(err, result.status === 200);
 
                         });
 
