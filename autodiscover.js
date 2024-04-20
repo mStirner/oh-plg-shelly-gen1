@@ -5,9 +5,16 @@ module.exports = (logger, [
     C_MDNS
 ], events) => {
 
+
     // listen for new added devices
-    // fetch /shelly from device & update generation version
-    C_DEVICES.events.on("add", (device) => {
+    // fetch /shelly from device & update labels
+    C_DEVICES.found({
+        labels: [
+            "shelly=true",
+            "gen=undefined",
+            "needs-config=true"
+        ]
+    }, (device) => {
 
         logger.info(`Shelly device ${device.name} added`);
 
@@ -120,7 +127,12 @@ module.exports = (logger, [
                         host: data,
                         port: 80
                     }
-                }]
+                }],
+                labels: [
+                    "shelly=true",
+                    "gen=undefined",
+                    "needs-config=true"
+                ]
             });
 
         });
