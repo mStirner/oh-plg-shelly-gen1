@@ -12,7 +12,7 @@ Add plugin item via HTTP API:<br />
 ```json
 {
    "name":"Shelly Gen 1 Integration",
-   "version":1,
+   "version": "1.0.0",
    "intents":[
       "devices",
       "endpoints",

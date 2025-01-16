@@ -24,7 +24,7 @@ module.exports = (logger, [
         let { host, port } = interface.settings;
         let agent = interface.httpAgent();
 
-        interface.once("attached", () => {
+        //interface.once("attached", () => {
 
             // do request to unprotected /shelly endpoint
             // check if authenticiation is needed
@@ -90,7 +90,7 @@ module.exports = (logger, [
                 }
             });
 
-        });
+        //});
 
     });
 

@@ -137,7 +137,7 @@ module.exports = (logger, [
 
                             // TODO check body result
                             //let body = result.body;
-                            done(err, result.status === 200);
+                            done(err, result?.status === 200);
 
                         });
 
