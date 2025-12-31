@@ -4,6 +4,7 @@
 const { URLSearchParams } = require("url");
 
 const request = require("../../../helper/request.js");
+const { hueToRgb } = require("../../../helper/colors.js");
 
 module.exports = (logger, [
     C_ENDPOINTS
@@ -38,6 +39,24 @@ module.exports = (logger, [
                     alias: "COLOR",
                     interface: iface._id,
                     params: [{
+                        key: "color",
+                        type: "number",
+                        min: 0,
+                        max: 360,
+                        classes: ["hue-fader"]
+                    }, {
+                        key: "brightness",
+                        type: "number",
+                        min: 0,
+                        max: 100,
+                        classes: ["brightness-fader"]
+                    }, {
+                        key: "saturation",
+                        type: "number",
+                        min: 0,
+                        max: 100,
+                        classes: ["saturation-fader"]
+                    }/*{
                         key: "r",
                         type: "number",
                         min: 0,
@@ -52,6 +71,16 @@ module.exports = (logger, [
                         type: "number",
                         min: 0,
                         max: 255
+                    }*/]
+                }, {
+                    name: "Gain",
+                    alias: "GAIN",
+                    interface: iface._id,
+                    params: [{
+                        key: "gain",
+                        type: "number",
+                        min: 0,
+                        max: 100
                     }]
                 }];
 
@@ -109,15 +138,21 @@ module.exports = (logger, [
 
                         } else if (cmd.alias === "COLOR") {
 
+                            let { color = 0, saturation = 100, brightness = 100 } = params.lean();
+                            let [r, g, b] = hueToRgb(color, saturation, brightness);
+
+                            //qs.set("gain", 1);
                             qs.set("turn", "on");
-                            qs.set("red", params[0].value || 0);
-                            qs.set("green", params[1].value || 0);
-                            qs.set("blue", params[2].value || 0);
+                            qs.set("red", r);
+                            qs.set("green", g);
+                            qs.set("blue", b);
 
                         } else if (cmd.alias === "GAIN") {
 
+                            let { gain = 100 } = params.lean();
+
                             qs.set("turn", "on");
-                            qs.set("gain", params[0].value || 0);
+                            qs.set("gain", gain);
 
                         } else {
 
@@ -125,12 +160,11 @@ module.exports = (logger, [
 
                         }
 
+                        // `http://${host}:${port}/color/${index}?turn=${turn}&red=${r}&green=${g}&blue=${b}`
                         let url = `http://${host}:${port}/color/${index}?${qs.toString()}`;
 
-                        console.log("Shelly request:", url);
+                        logger.verbose("URL", url);
 
-
-                        // `http://${host}:${port}/color/${index}?turn=${turn}&red=${r}&green=${g}&blue=${b}`
                         request(url, {
                             agent
                         }, (err, result) => {
